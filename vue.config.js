@@ -9,14 +9,6 @@ module.exports = {
     }
   },
   publicPath: process.env.NODE_ENV === 'production' ? '/onnxruntime-web-demo/' : '/',
-  outputDir: 'docs',
-  configureWebpack: config => {
-    if (process.env.NODE_ENV === 'production') {
-      config.node = {
-        __dirname: false,
-        __filename: false
-      }
-    }
-  }
+  outputDir: 'docs'
 }
 

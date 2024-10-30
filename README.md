@@ -57,24 +57,6 @@ npm run build
 
 This will pack the source files into `/docs` folder and be ready for deployment.
 
-**- Electron support**
-
-ONNX Runtime Web demo can also serve as a Windows desktop app using [Electron](https://electronjs.org/).
-
-First create a developer build of the app by running
-
-```
-npm run build -- --mode developer
-```
-
-Then run
-
-```
-npm run electron-packager
-```
-
-This will create a new `/ONNXRuntimeWeb-demo-win32-x64` folder. Run `/ONNXRuntimeWeb-demo-win32-x64/ONNXRuntimeWeb-demo.exe` to enjoy Electron desktop app.
-
 ## Credits
 
 This demo is adapted from [keras.js demo](https://github.com/transcranial/keras-js). Modifications have been made to the UI and the backend uses `ONNX Runtime Web`.
