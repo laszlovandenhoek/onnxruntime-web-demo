@@ -1,37 +1,15 @@
 <template>
   <div id="app">
     <v-app>
-      <v-navigation-drawer v-model="showNav" absolute fixed floating app>
-        <main-menu :currentView="currentView"></main-menu>
-      </v-navigation-drawer>
-      <v-toolbar app dark flat color="primary">
-        <v-toolbar-side-icon
-          @click.stop="showNav = !showNav"
-        ></v-toolbar-side-icon>
-        <v-toolbar-title>{{ currentTitle }}</v-toolbar-title>
-        <v-spacer></v-spacer>
-      </v-toolbar>
-
       <v-content>
         <v-container
-          @click.stop="showNav = false"
           fluid
           fill-height
           class="content-panel"
         >
           <div class="demo">
             <div class="ui-container">
-              <router-view :hasWebGL="hasWebGL"></router-view>
-              <v-layout
-                column
-                justify-center
-                align-center
-                fill-height
-                class="footer-label"
-              >
-                {{ currentDescription }}
-                <a target="_blank" :href="currentLink">{{ currentLink }}</a>
-              </v-layout>
+              <router-view :hasWebGL="true"></router-view>
             </div>
           </div>
         </v-container>
@@ -41,60 +19,13 @@
 </template>
 
 <script lang="ts">
-import MainMenu from "./components/MainMenu.vue";
-import {
-  DEMO_TITLES,
-  DEMO_DESCRIPTIONS,
-  DEMO_MODEL_LINKS,
-} from "./data/demo-titles";
-import Component from "vue-class-component";
 import Vue from "vue";
+import Component from "vue-class-component";
 
-@Component({
-  components: { MainMenu },
-})
+@Component
 export default class App extends Vue {
-  showNav: boolean;
-  hasWebGL: boolean;
-
-  constructor() {
-    super();
-    this.showNav = false;
-    this.hasWebGL = true;
-  }
-
-  get currentView() {
-    const path = this.$route.path;
-    return path.replace(/^\//, "") || "home";
-  }
-
-  get currentTitle() {
-    const title = DEMO_TITLES[this.currentView];
-    if (title) {
-      return title;
-    } else {
-      return "ONNX Runtime Web";
-    }
-  }
-  get currentDescription() {
-    const description = DEMO_DESCRIPTIONS[this.currentView];
-    if (description) {
-      return description;
-    } else {
-      return "";
-    }
-  }
-  get currentLink() {
-    const link = DEMO_MODEL_LINKS[this.currentView];
-    if (link) {
-      return link;
-    } else {
-      return "";
-    }
-  }
 }
 </script>
-
 <style lang="postcss">
 @import "./variables.css";
 
