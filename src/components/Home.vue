@@ -28,22 +28,6 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 const DEMO_INFO = [
-  {
-    title: "MobileNet, trained on ImageNet",
-    path: "mobilenet",
-    imagePath: require("@/assets/mobilenet.png"),
-  },
-  {
-    title: "SqueezeNet, trained on ImageNet",
-    path: "squeezenet",
-    imagePath: require("@/assets/squeezenet.png"),
-  },
-  {
-    title: "Emotion FerPlus",
-    path: "emotion_ferplus",
-    imagePath: require("@/assets/emotion.png"),
-  },
-  { title: "Yolo", path: "yolo", imagePath: require("@/assets/yolo.png") },
   { title: "MNIST", path: "mnist", imagePath: require("@/assets/mnist.png") },
 ];
 

@@ -23,7 +23,7 @@ import { Tensor } from "onnxruntime-web";
 import { mathUtils } from "../../utils";
 
 const MODEL_FILEPATH_PROD = `/onnxruntime-web-demo/mnist.onnx`;
-const MODEL_FILEPATH_DEV = "/mnist.onnx";
+const MODEL_FILEPATH_DEV = "/mnist-with-outputs.onnx";
 
 @Component({
   components: {

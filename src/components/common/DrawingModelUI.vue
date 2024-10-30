@@ -51,11 +51,11 @@
                   width="300"
                   height="300"
                   @mousedown="activateDraw"
-                  @mouseup="run"
-                  @mouseleave="run"
+                  @mouseup="stopDrawing"
+                  @mouseleave="stopDrawing"
                   @mousemove="draw"
                   @touchstart="activateDraw"
-                  @touchend="run"
+                  @touchend="stopDrawing"
                   @touchmove="draw"
                 ></canvas>
               </div>
@@ -183,7 +183,7 @@ export default class DrawingModelUI extends Vue {
       this.modelLoading = true;
       this.modelInitializing = true;
     }
-
+    
     try {
       if (this.sessionBackend === "webgl") {
         this.gpuSession = await runModelUtils.createModelGpu(this.modelFile);
@@ -193,6 +193,7 @@ export default class DrawingModelUI extends Vue {
         this.session = this.cpuSession;
       }
     } catch (e) {
+      debugger;
       this.modelLoading = false;
       this.modelInitializing = false;
       if (this.sessionBackend === "webgl") {
@@ -229,10 +230,11 @@ export default class DrawingModelUI extends Vue {
   }
 
   async run() {
-    if (!this.drawing) {
+    // Skip if model is not ready or no drawing is happening
+    if (!this.drawing || this.modelLoading || this.modelInitializing || this.sessionRunning) {
       return;
     }
-    this.drawing = false;
+    
     this.sessionRunning = true;
     const ctx = (
       document.getElementById("input-canvas") as HTMLCanvasElement
@@ -315,6 +317,13 @@ export default class DrawingModelUI extends Vue {
       ctx.lineTo(p1[0], p1[1]);
       ctx.stroke();
     }
+    
+    // Add this line to run inference after each draw update
+    this.run();
+  }
+
+  stopDrawing() {
+    this.drawing = false;
   }
 }
 </script>
