@@ -76,7 +76,6 @@ const props = withDefaults(defineProps<Props>(), {});
 // State variables
 const modelLoadingError = ref(false);
 const sessionRunning = ref(false);
-const input = ref(new Float32Array(784));
 const output = ref(new Float32Array(10));
 const outputClasses = ref(_.range(10));
 const drawing = ref(false);
@@ -113,7 +112,12 @@ const run = async () => {
   ).getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
   const tensor = props.preprocess(ctx);
   const [res, time] = await runModelUtils.runModel(session.value!, tensor);
-  output.value = props.postprocess(res);
+  output.value = props.postprocess(res["Plus214_Output_0"]);
+  const conv1 = res["Plus30_output"];
+  const conv2 = res["Plus112_output"];
+
+  
+
   inferenceTime.value = time;
   sessionRunning.value = false;
 };

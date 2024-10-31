@@ -30,7 +30,7 @@ export async function warmupModel(model: InferenceSession, dims: number[]) {
   }
 }
 
-export async function runModel(model: InferenceSession | undefined, preprocessedData: Tensor): Promise<[Tensor, number]> {
+export async function runModel(model: InferenceSession | undefined, preprocessedData: Tensor): Promise<[Record<string, Tensor>, number]> {
   if (!model) {
     throw new Error("Model is not initialized");
   }
@@ -38,10 +38,9 @@ export async function runModel(model: InferenceSession | undefined, preprocessed
   try {
     const feeds: Record<string, Tensor> = {};
     feeds[model.inputNames[0]] = preprocessedData;
-    const outputData = await model.run(feeds);
+    const output = await model.run(feeds);
     const end = new Date();
     const inferenceTime = (end.getTime() - start.getTime());
-    const output = outputData[model.outputNames[0]];
 
     return [output, inferenceTime];
   } catch (e) {
