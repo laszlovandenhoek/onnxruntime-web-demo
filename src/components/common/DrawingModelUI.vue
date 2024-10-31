@@ -1,12 +1,8 @@
 <template>
-  <div>
-    <v-container fluid>
-      <v-row
-        justify="center"
-        align="center"
-        class="image-panel elevation-1"
-      >
-        <v-col cols="4" class="text-center">
+  <div class="drawing-container">
+    <div class="image-panel elevation-1">
+      <div class="panel-content">
+        <div class="panel-section" style="width: 400px">
           <div class="input-container">
             <div class="input-label">Draw any digit (0-9) here</div>
             <div class="canvas-container">
@@ -43,9 +39,9 @@
               Clear
             </v-btn>
           </div>
-        </v-col>
+        </div>
 
-        <v-col cols="3" class="text-center">
+        <div class="panel-section" style="width: 180px">
           <div class="layer-outputs-container">
             <div class="layer-output">
               <div class="layer-output-heading">
@@ -64,9 +60,9 @@
               </div>
             </div>
           </div>
-        </v-col>
+        </div>
 
-        <v-col cols="3" class="text-center">
+        <div class="panel-section" style="width: 270px">
           <div class="layer-outputs-container">
             <div class="layer-output">
               <div class="layer-output-heading">
@@ -85,9 +81,9 @@
               </div>
             </div>
           </div>
-        </v-col>
+        </div>
 
-        <v-col cols="2" class="text-center">
+        <div class="panel-section" style="width: 230px">
           <div class="output-column">
             <div class="output">
               <div
@@ -96,17 +92,17 @@
                 v-for="i in outputClasses"
                 :key="`output-class-${i}`"
               >
+                <div class="output-label">{{ i }}</div>
                 <div
                   class="output-bar"
-                  :style="{ height: `${Math.round(180 * output[i])}px` }"
+                  :style="{ width: `${Math.round(180 * output[i])}px` }"
                 ></div>
-                <div class="output-label">{{ i }}</div>
               </div>
             </div>
           </div>
-        </v-col>
-      </v-row>
-    </v-container>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -364,13 +360,15 @@ onMounted(async () => {
 <style scoped lang="postcss">
 @import "../../variables.css";
 .image-panel {
-  padding: 20px;
-  margin-top: 30px;
+  padding: 0;
+  margin: 30px auto;
   background-color: white;
-  position: relative;
   min-height: 600px;
+  width: fit-content;
+  position: relative;
   display: flex;
   align-items: center;
+  gap: 0;
 
   & .loading-indicator {
     position: absolute;
@@ -460,31 +458,31 @@ onMounted(async () => {
   
   & .output {
     display: flex;
-    flex-direction: row;
-    align-items: flex-end;
+    flex-direction: column;
+    align-items: flex-start;
     justify-content: center;
-    height: 200px;
+    width: 200px;
     user-select: none;
     cursor: default;
     
     & .output-class {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      justify-content: flex-end;
-      margin: 0 5px;
+      margin: 5px 0;
 
       & .output-label {
         text-align: center;
         font-family: var(--font-sans-serif);
         font-size: 15px;
         color: black;
-        padding: 6px 0;
+        padding: 0 6px;
+        width: 25px;
       }
 
       & .output-bar {
-        width: 16px;
-        transition: height 0.2s ease-out;
+        height: 16px;
+        transition: width 0.2s ease-out;
         background: var(--color-blue-light);
       }
 
@@ -493,7 +491,6 @@ onMounted(async () => {
           background: var(--color-red);
         }
       }
-
     }
   }
 }
@@ -502,7 +499,8 @@ onMounted(async () => {
   position: relative;
   display: flex;
   justify-content: center;
-  width: 50%;
+  width: 100%;
+  margin: 0;
   
   & .bg-line {
     position: absolute;
@@ -584,4 +582,15 @@ onMounted(async () => {
 .fade-leave-to {
   opacity: 0;
 }
+
+
+.panel-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0;
+}
+
+
 </style>
