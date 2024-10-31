@@ -33,7 +33,25 @@
             </v-row>
           </div>
         </v-col>
-
+        <v-col cols="12" class="text-center">
+          <div class="layer-outputs-container">
+            <div class="layer-output">
+              <div class="layer-output-heading">
+                <span class="layer-class">First Convolution Layer</span>
+                <span>8 feature maps (28x28)</span>
+              </div>
+              <div class="layer-output-canvas-container">
+                <canvas 
+                  v-for="i in 8" 
+                  :key="`conv1-${i}`"
+                  :id="`conv1-${i-1}`"
+                  width="28"
+                  height="28"
+                ></canvas>
+              </div>
+            </div>
+          </div>
+        </v-col>
         <v-col cols="12" class="text-center">
           <div class="output-column">
             <div class="output">
@@ -114,9 +132,36 @@ const run = async () => {
   const [res, time] = await runModelUtils.runModel(session.value!, tensor);
   output.value = props.postprocess(res["Plus214_Output_0"]);
   const conv1 = res["Plus30_output"];
-  const conv2 = res["Plus112_output"];
 
-  
+  // Draw conv1 feature maps
+  const conv1Data = conv1.data as Float32Array;
+  for (let i = 0; i < 8; i++) {
+    const canvas = document.getElementById(`conv1-${i}`) as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d')!;
+    const imageData = ctx.createImageData(28, 28);
+    
+    // Extract and normalize the i-th feature map
+    let min = Infinity;
+    let max = -Infinity;
+    for (let j = 0; j < 28 * 28; j++) {
+      const val = conv1Data[i * 28 * 28 + j];
+      min = Math.min(min, val);
+      max = Math.max(max, val);
+    }
+    
+    // Draw the normalized values
+    for (let j = 0; j < 28 * 28; j++) {
+      const val = conv1Data[i * 28 * 28 + j];
+      const normalized = Math.floor(255 * (val - min) / (max - min));
+      const idx = j * 4;
+      imageData.data[idx] = normalized;     // R
+      imageData.data[idx + 1] = normalized; // G
+      imageData.data[idx + 2] = normalized; // B
+      imageData.data[idx + 3] = 255;        // A
+    }
+    
+    ctx.putImageData(imageData, 0, 0);
+  }
 
   inferenceTime.value = time;
   sessionRunning.value = false;
@@ -140,6 +185,14 @@ const clear = () => {
     document.getElementById("input-canvas-scaled") as HTMLCanvasElement
   ).getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
   ctxScaled.clearRect(0, 0, ctxScaled.canvas.width, ctxScaled.canvas.height);
+
+  // Clear conv1 feature maps
+  for (let i = 0; i < 8; i++) {
+    const canvas = document.getElementById(`conv1-${i}`) as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d')!;
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  }
+
   output.value = new Float32Array(10);
   drawing.value = false;
   strokes.value = [];
