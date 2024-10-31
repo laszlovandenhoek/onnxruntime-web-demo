@@ -30,7 +30,10 @@ export async function warmupModel(model: InferenceSession, dims: number[]) {
   }
 }
 
-export async function runModel(model: InferenceSession, preprocessedData: Tensor): Promise<[Tensor, number]> {
+export async function runModel(model: InferenceSession | undefined, preprocessedData: Tensor): Promise<[Tensor, number]> {
+  if (!model) {
+    throw new Error("Model is not initialized");
+  }
   const start = new Date();
   try {
     const feeds: Record<string, Tensor> = {};

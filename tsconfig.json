@@ -1,43 +1,39 @@
 {
-  "compileOnSave": true,
   "compilerOptions": {
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "esModuleInterop": true,
-      "target": "es5",
-      "noImplicitAny": true,
-      "declaration": true,
-      "sourceMap": true,
-      "baseUrl": ".",
-      "preserveConstEnums": true,
-      "lib": [
-          "es2016", 
-          "dom", 
-          "esnext",
-          "dom.iterable",
-          "scripthost", 
-      ],
-      "declarationDir": "./types",
-      "noUnusedLocals": true,
-      "noImplicitReturns": true,
-      "noImplicitThis": true,
-      "alwaysStrict": true,
-      "strictNullChecks": true,
-      "noUnusedParameters": false,
-      "pretty": true,
-      "allowUnreachableCode": false,
-      "experimentalDecorators": true,
-      "allowSyntheticDefaultImports": true
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "types": [
+      "vite/client",
+      "node"
+    ],
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "src/**/*.vue"
   ],
   "exclude": [
-    "node_modules", 
-    "src/common"
+    "node_modules"
   ]
 }

@@ -1,39 +1,6 @@
 <template>
   <div>
-    <model-status
-      v-if="modelLoading || modelInitializing"
-      :modelLoading="modelLoading"
-      :modelInitializing="modelInitializing"
-    ></model-status>
     <v-container fluid>
-      <!-- Utility bar to select session backend configs. -->
-      <v-layout
-        justify-center
-        align-center
-        style="margin: auto; width: 40%; padding: 40px"
-      >
-        <div class="select-backend">Select Backend:</div>
-        <v-select
-          v-model="sessionBackend"
-          :disabled="modelLoading || modelInitializing || sessionRunning"
-          :items="backendSelectList"
-          label="Switch Backend"
-          :menu-props="{ maxHeight: '750' }"
-          solo
-          single-line
-          hide-details
-        ></v-select>
-      </v-layout>
-      <v-layout>
-        <v-flex
-          v-if="modelLoadingError"
-          style="padding-bottom: 30px"
-          class="error-message"
-        >
-          Error: Current backend is not supported on your machine. Try Selecting
-          a different backend.
-        </v-flex>
-      </v-layout>
       <v-layout
         row
         wrap
@@ -97,13 +64,8 @@ import _ from "lodash";
 import { mathUtils, runModelUtils } from "../../utils";
 import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 import { Tensor, InferenceSession } from "onnxruntime-web";
-import ModelStatus from "../common/ModelStatus.vue";
 
-@Component({
-  components: {
-    ModelStatus,
-  },
-})
+@Component
 export default class DrawingModelUI extends Vue {
   @Prop({ type: String, required: true }) modelFilepath!: string;
   @Prop({ type: Function, required: true }) preprocess!: (
@@ -116,8 +78,6 @@ export default class DrawingModelUI extends Vue {
     output: Float32Array
   ) => number;
 
-  modelLoading: boolean;
-  modelInitializing: boolean;
   modelLoadingError: boolean;
   sessionRunning: boolean;
   input: Float32Array;
@@ -126,12 +86,8 @@ export default class DrawingModelUI extends Vue {
   drawing: boolean;
   strokes: number[][][];
   inferenceTime: number;
-  session: InferenceSession;
-  gpuSession: InferenceSession | undefined;
-  cpuSession: InferenceSession | undefined;
-  sessionBackend: string;
+  session: InferenceSession | undefined;
   modelFile: ArrayBuffer;
-  backendSelectList: Array<{ text: string; value: string }>;
 
   constructor() {
     super();
@@ -141,97 +97,34 @@ export default class DrawingModelUI extends Vue {
     this.drawing = false;
     this.strokes = [];
     this.inferenceTime = 0;
-    this.modelLoading = true;
-    this.modelInitializing = true;
     this.sessionRunning = false;
     this.modelLoadingError = false;
-    this.sessionBackend = "webgl";
     this.modelFile = new ArrayBuffer(0);
-    this.backendSelectList = [
-      { text: "GPU-WebGL", value: "webgl" },
-      { text: "CPU-WebAssembly", value: "wasm" },
-    ];
   }
 
   async created() {
     // fetch the model file to be used later
     const response = await fetch(this.modelFilepath);
     this.modelFile = await response.arrayBuffer();
-    try {
-      await this.initSession();
-    } catch (e) {
-      this.sessionBackend = "wasm";
-    }
+    await this.initSession();
   }
 
   async initSession() {
     this.sessionRunning = false;
     this.modelLoadingError = false;
-    if (this.sessionBackend === "webgl") {
-      if (this.gpuSession) {
-        this.session = this.gpuSession;
-        return;
-      }
-      this.modelLoading = true;
-      this.modelInitializing = true;
-    }
-    if (this.sessionBackend === "wasm") {
-      if (this.cpuSession) {
-        this.session = this.cpuSession;
-        return;
-      }
-      this.modelLoading = true;
-      this.modelInitializing = true;
-    }
     
     try {
-      if (this.sessionBackend === "webgl") {
-        this.gpuSession = await runModelUtils.createModelGpu(this.modelFile);
-        this.session = this.gpuSession;
-      } else if (this.sessionBackend === "wasm") {
-        this.cpuSession = await runModelUtils.createModelCpu(this.modelFile);
-        this.session = this.cpuSession;
-      }
+      this.session = await runModelUtils.createModelCpu(this.modelFile);
     } catch (e) {
-      debugger;
-      this.modelLoading = false;
-      this.modelInitializing = false;
-      if (this.sessionBackend === "webgl") {
-        this.gpuSession = undefined;
-      } else {
-        this.cpuSession = undefined;
-      }
-      throw new Error("Error: Backend not supported. ");
+      throw new Error("Error: Backend not supported. ", { cause: e });
     }
-    this.modelLoading = false;
-    // warm up session with a sample tensor. Use setTimeout(..., 0) to make it an async execution so
-    // that UI update can be done.
-    if (this.sessionBackend === "webgl") {
-      setTimeout(() => {
-        runModelUtils.warmupModel(this.session!, [1, 1, 28, 28]);
-        this.modelInitializing = false;
-      }, 0);
-    } else {
-      await runModelUtils.warmupModel(this.session!, [1, 1, 28, 28]);
-      this.modelInitializing = false;
-    }
+    
+    await runModelUtils.warmupModel(this.session!, [1, 1, 28, 28]);
   }
-
-  @Watch("sessionBackend")
-  async onSessionBackendChange(newVal: string) {
-    this.sessionBackend = newVal;
-    this.clear();
-    try {
-      await this.initSession();
-    } catch (e) {
-      this.modelLoadingError = true;
-    }
-    return newVal;
-  }
-
+  
   async run() {
     // Skip if model is not ready or no drawing is happening
-    if (!this.drawing || this.modelLoading || this.modelInitializing || this.sessionRunning) {
+    if (!this.drawing || this.sessionRunning) {
       return;
     }
     
@@ -274,7 +167,7 @@ export default class DrawingModelUI extends Vue {
   }
 
   activateDraw(e: any) {
-    if (this.modelLoading || this.modelInitializing || this.modelLoadingError) {
+    if (this.modelLoadingError) {
       return;
     }
     this.drawing = true;

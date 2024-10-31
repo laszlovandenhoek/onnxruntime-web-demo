@@ -9,7 +9,7 @@
         >
           <div class="demo">
             <div class="ui-container">
-              <router-view :hasWebGL="true"></router-view>
+              <router-view :hasWebGL="false"></router-view>
             </div>
           </div>
         </v-container>

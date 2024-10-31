@@ -3,7 +3,7 @@ const path = require("path");
 
 // copy onnxruntime-web WebAssembly files to {workspace}/public/ folder
 const srcFolder = path.join(__dirname, 'node_modules', 'onnxruntime-web', 'dist');
-const destFolder = path.join(__dirname, 'public', 'js');
+const destFolder = path.join(__dirname, 'public');
 if (!fs.existsSync(destFolder)) {
     fs.mkdirSync(destFolder);
 }
