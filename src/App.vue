@@ -1,31 +1,25 @@
 <template>
-  <div id="app">
-    <v-app>
-      <v-content>
-        <v-container
-          fluid
-          fill-height
-          class="content-panel"
-        >
-          <div class="demo">
-            <div class="ui-container">
-              <router-view :hasWebGL="false"></router-view>
-            </div>
+  <v-app>
+    <v-main>
+      <v-container
+        fluid
+        fill-height
+        class="content-panel"
+      >
+        <div class="demo">
+          <div class="ui-container">
+            <router-view :hasWebGL="false"></router-view>
           </div>
-        </v-container>
-      </v-content>
-    </v-app>
-  </div>
+        </div>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-
-@Component
-export default class App extends Vue {
-}
+<script setup lang="ts">
+// No setup needed - this is a simple container component
 </script>
+
 <style lang="postcss">
 @import "./variables.css";
 

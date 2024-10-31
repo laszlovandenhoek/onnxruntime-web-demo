@@ -9,24 +9,25 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.12.1",
     "ndarray": "^1.0.19",
     "ndarray-ops": "^1.2.2",
     "ndarray-resample": "^1.0.1",
     "ndarray-squeeze": "^1.0.2",
     "ndarray-unpack": "^1.0.0",
     "onnxruntime-web": "1.8.0-dev.20210708.0",
-    "vue": "^2.7.16",
-    "vue-class-component": "^7.2.6",
-    "vue-property-decorator": "^9.1.2",
-    "vue-router": "^3.5.2",
-    "whatwg-fetch": "^3.6.2"
+    "vue": "^3.3.0",
+    "vue-router": "^4.4.5",
+    "whatwg-fetch": "^3.6.2",
+    "vuetify": "^3.7.3",
+    "@mdi/font": "^7.4.47"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.172",
     "@types/long": "^4.0.1",
     "@types/ndarray": "^1.0.10",
     "@types/request": "^2.48.7",
+    "@vue/runtime-dom": "^3.3.0",
+    "@vue/runtime-core": "^3.3.0",
     "@vue/babel-preset-app": "^5.0.8",
     "autoprefixer": "^10.4.20",
     "blueimp-load-image": "^2.21.0",
@@ -34,14 +35,13 @@
     "clang-format": "^1.5.0",
     "lodash": "^4.17.21",
     "postcss": "^8.4.47",
-    "@vitejs/plugin-vue2": "^2.3.1",
+    "@vitejs/plugin-vue": "^4.5.1",
     "@vue/tsconfig": "^0.5.1",
     "typescript": "^4.9.5",
     "vite": "^4.5.5",
-    "vite-plugin-vue2": "^2.0.3",
-    "vue-template-compiler": "^2.7.16",
-    "vuetify": "^1.5.13",
-    "@types/node": "^20.11.24"
+    "vuetify": "^3.7.3",
+    "@types/node": "^22.8.5",
+    "sass": "^1.71.0"
   },
   "postcss": {
     "plugins": {

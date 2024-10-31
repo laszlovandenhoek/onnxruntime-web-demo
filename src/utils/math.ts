@@ -7,7 +7,7 @@ export function softmax(arr: number[]): any {
 }
 
 /**
- * Find mindpoint of two points
+ * Find midpoint of two points
  */
 export function getMidpoint(p1: number[], p2: number[]): number[] {
   const [x1, y1] = p1;

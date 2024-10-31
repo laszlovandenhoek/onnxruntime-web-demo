@@ -12,10 +12,7 @@
     "useDefineForClassFields": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "types": [
-      "vite/client",
-      "node"
-    ],
+    "types": ["node", "@vue/runtime-core"],
     "paths": {
       "@/*": [
         "src/*"

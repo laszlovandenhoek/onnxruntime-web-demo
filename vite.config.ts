@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite'
-import { createVuePlugin } from 'vite-plugin-vue2'
+import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [
-    createVuePlugin()
+    vue()
   ],
   resolve: {
     alias: {
@@ -15,6 +15,11 @@ export default defineConfig({
       plugins: [
         require('autoprefixer')
       ]
+    },
+    preprocessorOptions: {
+      sass: {
+        additionalData: ['@import "vuetify/styles"', ''].join('\n')
+      }
     }
   }
 }) 

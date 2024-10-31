@@ -1,17 +1,15 @@
-import Vue from 'vue';
-import Router from 'vue-router';
-import MNIST from '../components/models/MNIST.vue';
+import { createRouter, createWebHashHistory } from 'vue-router'
+import MNIST from '../components/models/MNIST.vue'
 
-Vue.use(Router);
-
-export default new Router({
-  mode: 'hash',
-  base: import.meta.env.BASE_URL || '/',
+const router = createRouter({
+  history: createWebHashHistory(import.meta.env.BASE_URL || '/'),
   routes: [
     {
       path: '/',
       name: 'home',
       component: MNIST,
     }
-  ],
-});
+  ]
+})
+
+export default router
