@@ -53,6 +53,25 @@
           </div>
         </v-col>
         <v-col cols="12" class="text-center">
+          <div class="layer-outputs-container">
+            <div class="layer-output">
+              <div class="layer-output-heading">
+                <span class="layer-class">Second Convolution Layer</span>
+                <span>16 feature maps (14x14)</span>
+              </div>
+              <div class="layer-output-canvas-container">
+                <canvas 
+                  v-for="i in 16" 
+                  :key="`conv2-${i}`"
+                  :id="`conv2-${i-1}`"
+                  width="14"
+                  height="14"
+                ></canvas>
+              </div>
+            </div>
+          </div>
+        </v-col>
+        <v-col cols="12" class="text-center">
           <div class="output-column">
             <div class="output">
               <div
@@ -163,6 +182,37 @@ const run = async () => {
     ctx.putImageData(imageData, 0, 0);
   }
 
+  // Draw conv2 feature maps
+  const conv2 = res["Plus112_output"];
+  const conv2Data = conv2.data as Float32Array;
+  for (let i = 0; i < 16; i++) {
+    const canvas = document.getElementById(`conv2-${i}`) as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d')!;
+    const imageData = ctx.createImageData(14, 14);
+    
+    // Extract and normalize the i-th feature map
+    let min = Infinity;
+    let max = -Infinity;
+    for (let j = 0; j < 14 * 14; j++) {
+      const val = conv2Data[i * 14 * 14 + j];
+      min = Math.min(min, val);
+      max = Math.max(max, val);
+    }
+    
+    // Draw the normalized values
+    for (let j = 0; j < 14 * 14; j++) {
+      const val = conv2Data[i * 14 * 14 + j];
+      const normalized = Math.floor(255 * (val - min) / (max - min));
+      const idx = j * 4;
+      imageData.data[idx] = normalized;     // R
+      imageData.data[idx + 1] = normalized; // G
+      imageData.data[idx + 2] = normalized; // B
+      imageData.data[idx + 3] = 255;        // A
+    }
+    
+    ctx.putImageData(imageData, 0, 0);
+  }
+
   inferenceTime.value = time;
   sessionRunning.value = false;
 };
@@ -189,6 +239,13 @@ const clear = () => {
   // Clear conv1 feature maps
   for (let i = 0; i < 8; i++) {
     const canvas = document.getElementById(`conv1-${i}`) as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d')!;
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  }
+
+  // Clear conv2 feature maps
+  for (let i = 0; i < 16; i++) {
+    const canvas = document.getElementById(`conv2-${i}`) as HTMLCanvasElement;
     const ctx = canvas.getContext('2d')!;
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   }
@@ -397,10 +454,8 @@ onMounted(async () => {
   & .layer-output {
     position: relative;
     z-index: 1;
-    margin: 30px 20px;
     background: whitesmoke;
     border-radius: 10px;
-    padding: 20px;
     overflow-x: auto;
     & .layer-output-heading {
       font-size: 1rem;
