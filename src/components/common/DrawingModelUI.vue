@@ -6,57 +6,53 @@
         align="center"
         class="image-panel elevation-1"
       >
-        <v-col cols="12" class="text-center">
-          <div class="input-row">
-            <div class="input-container">
-              <div class="input-label">Draw any digit (0-9) here</div>
-              <div class="canvas-container">
-                <canvas
-                  id="input-canvas"
-                  width="300"
-                  height="300"
-                  @mousedown="activateDraw"
-                  @mouseup="stopDrawing"
-                  @mouseleave="stopDrawing"
-                  @mousemove="draw"
-                  @touchstart="activateDraw"
-                  @touchend="stopDrawing"
-                  @touchmove="draw"
-                ></canvas>
-              </div>
+        <v-col cols="4" class="text-center">
+          <div class="input-container">
+            <div class="input-label">Draw any digit (0-9) here</div>
+            <div class="canvas-container">
+              <canvas
+                id="input-canvas"
+                width="300"
+                height="300"
+                @mousedown="activateDraw"
+                @mouseup="stopDrawing"
+                @mouseleave="stopDrawing"
+                @mousemove="draw"
+                @touchstart="activateDraw"
+                @touchend="stopDrawing"
+                @touchmove="draw"
+              ></canvas>
             </div>
-            <div class="preprocessed-container">
-              <div class="layer-output">
-                <div class="layer-output-heading">
-                  <span class="layer-class">Input After Preprocessing</span>
-                  <span>28x28 grayscale</span>
-                </div>
-                <div class="layer-output-canvas-container">
-                  <canvas
-                    id="preprocessed-input"
-                    width="28"
-                    height="28"
-                    class="input-canvas"
-                  ></canvas>
-                </div>
-              </div>
+
+            <div class="layer-output-heading">
+              <span class="layer-class">Input After Preprocessing</span>
+              <span>28x28 grayscale</span>
             </div>
-          </div>
-          <v-row align="end" justify="end">
+            <div class="layer-output-canvas-container">
+              <canvas
+                id="preprocessed-input"
+                width="28"
+                height="28"
+                class="input-canvas"
+              ></canvas>
+
+            </div>
+
             <v-btn color="primary" @click="clear" style="margin: 0px">
               <v-icon icon="mdi-close" class="mr-2"></v-icon>
               Clear
             </v-btn>
-          </v-row>
+          </div>
         </v-col>
-        <v-col cols="12" class="text-center">
+
+        <v-col cols="3" class="text-center">
           <div class="layer-outputs-container">
             <div class="layer-output">
               <div class="layer-output-heading">
                 <span class="layer-class">First Convolution Layer</span>
                 <span>8 feature maps (28x28)</span>
               </div>
-              <div class="layer-output-canvas-container">
+              <div class="layer-output-canvas-container conv1-grid">
                 <canvas 
                   v-for="i in 8" 
                   :key="`conv1-${i}`"
@@ -69,14 +65,15 @@
             </div>
           </div>
         </v-col>
-        <v-col cols="12" class="text-center">
+
+        <v-col cols="3" class="text-center">
           <div class="layer-outputs-container">
             <div class="layer-output">
               <div class="layer-output-heading">
                 <span class="layer-class">Second Convolution Layer</span>
                 <span>16 feature maps (14x14)</span>
               </div>
-              <div class="layer-output-canvas-container">
+              <div class="layer-output-canvas-container conv2-grid">
                 <canvas 
                   v-for="i in 16" 
                   :key="`conv2-${i}`"
@@ -89,7 +86,8 @@
             </div>
           </div>
         </v-col>
-        <v-col cols="12" class="text-center">
+
+        <v-col cols="2" class="text-center">
           <div class="output-column">
             <div class="output">
               <div
@@ -98,12 +96,12 @@
                 v-for="i in outputClasses"
                 :key="`output-class-${i}`"
               >
-              <div
-              class="output-bar"
-              :style="{ height: `${Math.round(180 * output[i])}px` }"
-              ></div>
-              <div class="output-label">{{ i }}</div>
-            </div>
+                <div
+                  class="output-bar"
+                  :style="{ height: `${Math.round(180 * output[i])}px` }"
+                ></div>
+                <div class="output-label">{{ i }}</div>
+              </div>
             </div>
           </div>
         </v-col>
@@ -366,10 +364,13 @@ onMounted(async () => {
 <style scoped lang="postcss">
 @import "../../variables.css";
 .image-panel {
-  padding: 40px 20px;
+  padding: 20px;
   margin-top: 30px;
   background-color: white;
   position: relative;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
 
   & .loading-indicator {
     position: absolute;
@@ -408,13 +409,15 @@ onMounted(async () => {
   
   & .canvas-container {
     display: inline-flex;
-    justify-content: flex-end;
+    justify-content: center;
     border: 15px solid var(--color-blue-lighter);
     transition: border-color 0.2s ease-in;
     &:hover {
       border-color: var(--color-blue-light);
     }
     & canvas {
+      width: 300px;
+      height: 300px;
       background: whitesmoke;
       &:hover {
         cursor: crosshair;
@@ -427,6 +430,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 20px;
   
   & .layer-output {
     background: whitesmoke;
@@ -496,6 +500,10 @@ onMounted(async () => {
 
 .layer-outputs-container {
   position: relative;
+  display: flex;
+  justify-content: center;
+  width: 50%;
+  
   & .bg-line {
     position: absolute;
     z-index: 0;
@@ -511,12 +519,15 @@ onMounted(async () => {
     background: whitesmoke;
     border-radius: 10px;
     overflow-x: auto;
+    padding: 10px;
+    
     & .layer-output-heading {
       font-size: 1rem;
       color: #999999;
       margin-bottom: 10px;
       display: flex;
       flex-direction: column;
+      align-items: center;
       font-size: 12px;
       & span.layer-class {
         color: var(--color-blue);
@@ -525,12 +536,27 @@ onMounted(async () => {
       }
     }
     & .layer-output-canvas-container {
-      display: inline-flex;
+      display: flex;
+      justify-content: center;
       flex-wrap: wrap;
       background: whitesmoke;
       & canvas {
         border: 1px solid lightgray;
         margin: 1px;
+      }
+
+      &.conv1-grid {
+        display: grid;
+        grid-template-columns: 70px;
+        grid-template-rows: repeat(8, 70px);
+        gap: 2px;
+      }
+
+      &.conv2-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 70px);
+        grid-template-rows: repeat(8, 70px);
+        gap: 2px;
       }
     }
   }
@@ -541,12 +567,12 @@ onMounted(async () => {
   height: 300px;
 }
 .conv1-canvas {
-  width: 140px;  /* 28px * 5 */
-  height: 140px;
+  width: 70px;
+  height: 70px;
 }
 .conv2-canvas {
-  width: 140px;  /* 14px * 10 */
-  height: 140px;
+  width: 70px;
+  height: 70px;
 }
 
 /* vue transition `fade` */
