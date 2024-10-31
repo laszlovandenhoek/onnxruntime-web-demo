@@ -7,7 +7,7 @@
         class="image-panel elevation-1"
       >
         <v-col cols="12" class="text-center">
-          <div class="input-column">
+          <div class="input-row">
             <div class="input-container">
               <div class="input-label">Draw any digit (0-9) here</div>
               <div class="canvas-container">
@@ -25,13 +25,29 @@
                 ></canvas>
               </div>
             </div>
-            <v-row align="end" justify="end">
-              <v-btn color="primary" @click="clear" style="margin: 0px">
-                <v-icon icon="mdi-close" class="mr-2"></v-icon>
-                Clear
-              </v-btn>
-            </v-row>
+            <div class="preprocessed-container">
+              <div class="layer-output">
+                <div class="layer-output-heading">
+                  <span class="layer-class">Input After Preprocessing</span>
+                  <span>28x28 grayscale</span>
+                </div>
+                <div class="layer-output-canvas-container">
+                  <canvas
+                    id="preprocessed-input"
+                    width="28"
+                    height="28"
+                    class="input-canvas"
+                  ></canvas>
+                </div>
+              </div>
+            </div>
           </div>
+          <v-row align="end" justify="end">
+            <v-btn color="primary" @click="clear" style="margin: 0px">
+              <v-icon icon="mdi-close" class="mr-2"></v-icon>
+              Clear
+            </v-btn>
+          </v-row>
         </v-col>
         <v-col cols="12" class="text-center">
           <div class="layer-outputs-container">
@@ -47,6 +63,7 @@
                   :id="`conv1-${i-1}`"
                   width="28"
                   height="28"
+                  class="conv1-canvas"
                 ></canvas>
               </div>
             </div>
@@ -66,6 +83,7 @@
                   :id="`conv2-${i-1}`"
                   width="14"
                   height="14"
+                  class="conv2-canvas"
                 ></canvas>
               </div>
             </div>
@@ -147,7 +165,31 @@ const run = async () => {
   const ctx = (
     document.getElementById("input-canvas") as HTMLCanvasElement
   ).getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
+  
   const tensor = props.preprocess(ctx);
+  
+  // Render preprocessed input
+  const preprocessedCanvas = document.getElementById("preprocessed-input") as HTMLCanvasElement;
+  const preprocessedCtx = preprocessedCanvas.getContext('2d')!;
+  const imageData = preprocessedCtx.createImageData(28, 28);
+  
+  // Get tensor data and normalize for display
+  const inputData = tensor.data as Float32Array;
+  let min = Math.min(...Array.from(inputData));
+  let max = Math.max(...Array.from(inputData));
+  
+  for (let i = 0; i < 28 * 28; i++) {
+    const val = inputData[i];
+    const normalized = Math.floor(255 * (val - min) / (max - min));
+    const idx = i * 4;
+    imageData.data[idx] = normalized;     // R
+    imageData.data[idx + 1] = normalized; // G
+    imageData.data[idx + 2] = normalized; // B
+    imageData.data[idx + 3] = 255;        // A
+  }
+  
+  preprocessedCtx.putImageData(imageData, 0, 0);
+
   const [res, time] = await runModelUtils.runModel(session.value!, tensor);
   output.value = props.postprocess(res["Plus214_Output_0"]);
   const conv1 = res["Plus30_output"];
@@ -253,6 +295,11 @@ const clear = () => {
   output.value = new Float32Array(10);
   drawing.value = false;
   strokes.value = [];
+
+  // Clear preprocessed input
+  const preprocessedCanvas = document.getElementById("preprocessed-input") as HTMLCanvasElement;
+  const preprocessedCtx = preprocessedCanvas.getContext('2d')!;
+  preprocessedCtx.clearRect(0, 0, preprocessedCtx.canvas.width, preprocessedCtx.canvas.height);
 };
 
 const activateDraw = (e: any) => {
@@ -338,49 +385,56 @@ onMounted(async () => {
     left: 5px;
   }
 }
-.input-column {
-  /* height: 100%; */
+.input-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  & .input-container {
-    width: 100%;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+.input-container {
+  text-align: center;
+  position: relative;
+  user-select: none;
+  
+  & .input-label {
+    font-family: var(--font-sans-serif);
+    font-size: 18px;
+    color: var(--color-lightgray);
     text-align: center;
-    margin: 20px;
-    position: relative;
-    user-select: none;
-    & .input-label {
-      font-family: var(--font-sans-serif);
-      font-size: 18px;
-      color: var(--color-lightgray);
-      text-align: center;
-      & span.arrow {
-        font-size: 36px;
-        color: #cccccc;
-        position: absolute;
-        /* right: -32px; */
-        top: 8px;
-      }
+    margin-bottom: 10px;
+  }
+  
+  & .canvas-container {
+    display: inline-flex;
+    justify-content: flex-end;
+    border: 15px solid var(--color-blue-lighter);
+    transition: border-color 0.2s ease-in;
+    &:hover {
+      border-color: var(--color-blue-light);
     }
-    & .canvas-container {
-      display: inline-flex;
-      justify-content: flex-end;
-      margin: 10px 0;
-      border: 15px solid var(--color-blue-lighter);
-      transition: border-color 0.2s ease-in;
+    & canvas {
+      background: whitesmoke;
       &:hover {
-        border-color: var(--color-blue-light);
-      }
-      & canvas {
-        background: whitesmoke;
-        &:hover {
-          cursor: crosshair;
-        }
+        cursor: crosshair;
       }
     }
   }
 }
+
+.preprocessed-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  & .layer-output {
+    background: whitesmoke;
+    padding: 15px;
+    border-radius: 10px;
+  }
+}
+
 .controls-column {
   height: 100%;
   display: flex;
@@ -481,6 +535,20 @@ onMounted(async () => {
     }
   }
 }
+
+.input-canvas {
+  width: 300px;
+  height: 300px;
+}
+.conv1-canvas {
+  width: 140px;  /* 28px * 5 */
+  height: 140px;
+}
+.conv2-canvas {
+  width: 140px;  /* 14px * 10 */
+  height: 140px;
+}
+
 /* vue transition `fade` */
 .fade-enter-active,
 .fade-leave-active {
