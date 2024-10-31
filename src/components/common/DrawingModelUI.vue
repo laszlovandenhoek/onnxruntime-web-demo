@@ -6,7 +6,7 @@
         align="center"
         class="image-panel elevation-1"
       >
-        <v-col cols="12" sm="6" md="4">
+        <v-col cols="12" class="text-center">
           <div class="input-column">
             <div class="input-container">
               <div class="input-label">Draw any digit (0-9) here</div>
@@ -34,7 +34,7 @@
           </div>
         </v-col>
 
-        <v-col cols="12" sm="6" md="4">
+        <v-col cols="12" class="text-center">
           <div class="output-column">
             <div class="output">
               <div
@@ -43,12 +43,12 @@
                 v-for="i in outputClasses"
                 :key="`output-class-${i}`"
               >
-                <div class="output-label">{{ i }}</div>
-                <div
-                  class="output-bar"
-                  :style="{ width: `${Math.round(180 * output[i])}px` }"
-                ></div>
-              </div>
+              <div
+              class="output-bar"
+              :style="{ height: `${Math.round(180 * output[i])}px` }"
+              ></div>
+              <div class="output-label">{{ i }}</div>
+            </div>
             </div>
           </div>
         </v-col>
@@ -110,7 +110,7 @@ const run = async () => {
   sessionRunning.value = true;
   const ctx = (
     document.getElementById("input-canvas") as HTMLCanvasElement
-  ).getContext("2d") as CanvasRenderingContext2D;
+  ).getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
   const tensor = props.preprocess(ctx);
   const [res, time] = await runModelUtils.runModel(session.value!, tensor);
   output.value = props.postprocess(res);
@@ -121,11 +121,11 @@ const run = async () => {
 const clear = () => {
   const ctx = (
     document.getElementById("input-canvas") as HTMLCanvasElement
-  ).getContext("2d") as CanvasRenderingContext2D;
+  ).getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const ctxCenterCrop = (
     document.getElementById("input-canvas-centercrop") as HTMLCanvasElement
-  ).getContext("2d") as CanvasRenderingContext2D;
+  ).getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
   ctxCenterCrop.clearRect(
     0,
     0,
@@ -134,7 +134,7 @@ const clear = () => {
   );
   const ctxScaled = (
     document.getElementById("input-canvas-scaled") as HTMLCanvasElement
-  ).getContext("2d") as CanvasRenderingContext2D;
+  ).getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
   ctxScaled.clearRect(0, 0, ctxScaled.canvas.width, ctxScaled.canvas.height);
   output.value = new Float32Array(10);
   drawing.value = false;
@@ -160,7 +160,7 @@ const draw = (e: any) => {
   e.preventDefault();
   const ctx = (
     document.getElementById("input-canvas") as HTMLCanvasElement
-  ).getContext("2d") as CanvasRenderingContext2D;
+  ).getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
   ctx.lineWidth = 20;
   ctx.lineJoin = ctx.lineCap = "round";
   ctx.strokeStyle = "#393E46";
@@ -281,52 +281,47 @@ onMounted(async () => {
   }
 }
 .output-column {
-  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: left;
-  margin-left: 80px;
+  justify-content: center;
+  margin-top: 20px;
+  
   & .output {
-    height: 300;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: flex-end;
     justify-content: center;
+    height: 200px;
     user-select: none;
     cursor: default;
+    
     & .output-class {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 10px 0;
+      justify-content: flex-end;
+      margin: 0 5px;
 
       & .output-label {
-        text-align: right;
-        width: 35px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        text-align: center;
         font-family: var(--font-sans-serif);
         font-size: 15px;
         color: black;
-        padding: 0 6px;
-        border-right: 6px solid var(--color-blue-lighter);
+        padding: 6px 0;
       }
 
       & .output-bar {
-        height: 16px;
-        transition: width 0.2s ease-out;
+        width: 16px;
+        transition: height 0.2s ease-out;
         background: var(--color-blue-light);
       }
 
-      & .output-value {
-        text-align: left;
-        margin-left: 20px;
-        font-family: var(--font-sans-serif);
-        font-size: 20px;
-        color: black;
+      &.predicted {
+        .output-bar {
+          background: var(--color-red);
+        }
       }
+
     }
   }
 }

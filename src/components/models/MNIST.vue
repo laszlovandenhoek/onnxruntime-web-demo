@@ -22,7 +22,7 @@ import DrawingModelUI from "../common/DrawingModelUI.vue";
 import { Tensor } from "onnxruntime-web";
 import { mathUtils } from "../../utils";
 
-const MODEL_FILEPATH_PROD = `/onnxruntime-web-demo/mnist.onnx`;
+const MODEL_FILEPATH_PROD = `/onnxruntime-web-demo/mnist-with-outputs.onnx`;
 const MODEL_FILEPATH_DEV = "/mnist-with-outputs.onnx";
 
 const modelFilepath = ref(
@@ -38,14 +38,14 @@ const preprocess = (ctx: CanvasRenderingContext2D): Tensor => {
   );
   const ctxCenterCrop = (
     document.getElementById("input-canvas-centercrop") as HTMLCanvasElement
-  ).getContext("2d") as CanvasRenderingContext2D;
+  ).getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
   ctxCenterCrop.canvas.width = imageDataCenterCrop.width;
   ctxCenterCrop.canvas.height = imageDataCenterCrop.height;
   ctxCenterCrop.putImageData(imageDataCenterCrop, 0, 0);
   // scaled to 28 x 28
   const ctxScaled = (
     document.getElementById("input-canvas-scaled") as HTMLCanvasElement
-  ).getContext("2d") as CanvasRenderingContext2D;
+  ).getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
   ctxScaled.save();
   ctxScaled.scale(
     28 / ctxCenterCrop.canvas.width,
