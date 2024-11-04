@@ -22,6 +22,7 @@
 
             <div class="layer-output-heading">
               <span class="layer-class">Input After Preprocessing</span>
+              <br/>
               <span>28x28 grayscale</span>
             </div>
             <div class="layer-output-canvas-container">
@@ -561,14 +562,17 @@ onMounted(async () => {
 }
 
 .input-canvas {
-  width: 300px;
-  height: 300px;
+  image-rendering: pixelated;
+  width: 280px;
+  height: 280px;
 }
 .conv1-canvas {
+  image-rendering: pixelated;
   width: 70px;
   height: 70px;
 }
 .conv2-canvas {
+  image-rendering: pixelated;
   width: 70px;
   height: 70px;
 }
