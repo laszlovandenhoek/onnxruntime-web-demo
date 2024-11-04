@@ -8,7 +8,6 @@ module.exports = {
       }
     }
   },
-  publicPath: process.env.NODE_ENV === 'production' ? '/onnxruntime-web-demo/' : '/',
   outputDir: 'docs'
 }
 
