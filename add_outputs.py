@@ -1,3 +1,9 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "onnx",
+# ]
+# ///
 import onnx
 
 def add_intermediate_outputs(input_path: str, output_path: str):

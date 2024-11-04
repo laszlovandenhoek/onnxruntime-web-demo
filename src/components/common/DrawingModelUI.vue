@@ -546,15 +546,15 @@ onMounted(async () => {
 
       &.conv1-grid {
         display: grid;
-        grid-template-columns: 70px;
-        grid-template-rows: repeat(8, 70px);
+        grid-template-columns: 84px;
+        grid-template-rows: repeat(8, 84px);
         gap: 2px;
       }
 
       &.conv2-grid {
         display: grid;
-        grid-template-columns: repeat(2, 70px);
-        grid-template-rows: repeat(8, 70px);
+        grid-template-columns: repeat(2, 84px);
+        grid-template-rows: repeat(8, 84px);
         gap: 2px;
       }
     }
@@ -568,13 +568,13 @@ onMounted(async () => {
 }
 .conv1-canvas {
   image-rendering: pixelated;
-  width: 70px;
-  height: 70px;
+  width: 84px;
+  height: 84px;
 }
 .conv2-canvas {
   image-rendering: pixelated;
-  width: 70px;
-  height: 70px;
+  width: 84px;
+  height: 84px;
 }
 
 /* vue transition `fade` */
